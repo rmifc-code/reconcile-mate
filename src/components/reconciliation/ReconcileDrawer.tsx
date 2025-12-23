@@ -169,6 +169,36 @@ export const ReconcileDrawer = ({
               <Button variant="link" className="px-0 text-primary">
                 + Show 7 other matches...
               </Button>
+
+              {/* Suggested Match Details for Selected Invoice */}
+              {selectedMatchId && (
+                <>
+                  <Separator className="my-4" />
+                  <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                    <h4 className="text-sm font-semibold text-foreground mb-3">
+                      Suggested Match Details
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="space-y-1">
+                        <span className="text-muted-foreground text-xs">Transaction Type</span>
+                        <p className="font-medium text-foreground">Bill Payment</p>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-muted-foreground text-xs">Contact</span>
+                        <p className="font-medium text-foreground">Transfernon Tech</p>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-muted-foreground text-xs">Account</span>
+                        <p className="font-medium text-foreground">6400 - Bank Fees</p>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-muted-foreground text-xs">Reference</span>
+                        <p className="font-medium text-foreground font-mono">INV-AUTO-991</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </TabsContent>
 
             <TabsContent value="find-match" className="p-6 m-0">
