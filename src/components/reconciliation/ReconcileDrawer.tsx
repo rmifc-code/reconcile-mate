@@ -15,7 +15,7 @@ import {
 import { Transaction } from "./TransactionGrid";
 import { AIMatchCard } from "./AIMatchCard";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ChevronRight, AlertTriangle, Upload, Sparkles, Search, Plus, Lock, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertTriangle, Upload, Sparkles, Search, Plus, Lock, CheckCircle2, Unlink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -24,6 +24,7 @@ interface ReconcileDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onReconcile: (transactionId: string, matchId: string) => void;
+  onUnreconcile: (transactionId: string) => void;
   onPrevious: () => void;
   onNext: () => void;
 }
@@ -60,6 +61,7 @@ export const ReconcileDrawer = ({
   open,
   onOpenChange,
   onReconcile,
+  onUnreconcile,
   onPrevious,
   onNext,
 }: ReconcileDrawerProps) => {
@@ -205,6 +207,21 @@ export const ReconcileDrawer = ({
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* Unreconcile Button */}
+            <div className="pt-4">
+              <Button
+                variant="outline"
+                className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                onClick={() => onUnreconcile(transaction.id)}
+              >
+                <Unlink className="h-4 w-4" />
+                Break Reconciliation
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                This will reset the transaction to pending status for re-matching.
+              </p>
             </div>
           </div>
         ) : (
