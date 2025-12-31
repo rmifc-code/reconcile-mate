@@ -15,8 +15,9 @@ import {
 import { Transaction } from "./TransactionGrid";
 import { AIMatchCard } from "./AIMatchCard";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ChevronRight, AlertTriangle, Upload, Sparkles, Search, Plus, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertTriangle, Upload, Sparkles, Search, Plus, Lock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface ReconcileDrawerProps {
   transaction: Transaction | null;
@@ -116,197 +117,288 @@ export const ReconcileDrawer = ({
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="w-full justify-start rounded-none border-b border-border bg-transparent px-6 shrink-0">
-            <TabsTrigger
-              value="ai-suggestions"
-              className="gap-2 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none"
-            >
-              <Sparkles className="h-4 w-4" />
-              AI Suggestions ({mockMatches.length})
-            </TabsTrigger>
-            <TabsTrigger
-              value="find-match"
-              className="gap-2 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none"
-            >
-              <Search className="h-4 w-4" />
-              Find & Match
-            </TabsTrigger>
-            <TabsTrigger
-              value="create-new"
-              className="gap-2 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none"
-            >
-              <Plus className="h-4 w-4" />
-              Create New
-            </TabsTrigger>
-          </TabsList>
+        {/* Reconciled View or Tabs */}
+        {transaction.status === "reconciled" ? (
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {/* Success Banner */}
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-success/10 border border-success/20">
+              <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
+              <div>
+                <p className="font-medium text-success">Transaction Reconciled</p>
+                <p className="text-sm text-muted-foreground">
+                  This transaction has been successfully matched and reconciled.
+                </p>
+              </div>
+            </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto">
-            <TabsContent value="ai-suggestions" className="p-6 m-0 space-y-4">
-              {mockMatches.length > 1 && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20 text-sm">
-                  <AlertTriangle className="h-4 w-4 text-warning shrink-0" />
-                  <span className="text-warning-foreground">
-                    Multiple potential matches found. Please select the correct invoice.
-                  </span>
-                </div>
-              )}
-
-              <div className="space-y-3">
-                {mockMatches.map((match, index) => (
-                  <AIMatchCard
-                    key={match.id}
-                    match={match}
-                    isSelected={selectedMatchId === match.id}
-                    isBestMatch={index === 0}
-                    onSelect={setSelectedMatchId}
-                  />
-                ))}
+            {/* Matched Transaction Details */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-foreground">Matched Transaction Details</h3>
+                <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                  Verified
+                </Badge>
               </div>
 
-              <Button variant="link" className="px-0 text-primary">
-                + Show 7 other matches...
-              </Button>
-
-              {/* Suggested Match Details for Selected Invoice */}
-              {selectedMatchId && (
-                <>
-                  <Separator className="my-4" />
-                  <div className="bg-muted/50 rounded-lg p-4 border border-border">
-                    <h4 className="text-sm font-semibold text-foreground mb-3">
-                      Suggested Match Details
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="space-y-1">
-                        <span className="text-muted-foreground text-xs">Transaction Type</span>
-                        <p className="font-medium text-foreground">Bill Payment</p>
-                      </div>
-                      <div className="space-y-1">
-                        <span className="text-muted-foreground text-xs">Contact</span>
-                        <p className="font-medium text-foreground">Transfernon Tech</p>
-                      </div>
-                      <div className="space-y-1">
-                        <span className="text-muted-foreground text-xs">Account</span>
-                        <p className="font-medium text-foreground">6400 - Bank Fees</p>
-                      </div>
-                      <div className="space-y-1">
-                        <span className="text-muted-foreground text-xs">Reference</span>
-                        <p className="font-medium text-foreground font-mono">INV-AUTO-991</p>
-                      </div>
-                    </div>
+              <div className="bg-muted/50 rounded-lg p-4 border border-border space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Transaction Type</span>
+                    <p className="font-medium text-foreground">Bill Payment</p>
                   </div>
-                </>
-              )}
-            </TabsContent>
-
-            <TabsContent value="find-match" className="p-6 m-0">
-              <div className="relative mb-6">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input placeholder="Search invoices, bills, payments..." className="pl-9" />
-              </div>
-              <div className="text-center py-8 text-muted-foreground">
-                <Search className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p>Search for existing records to match this transaction</p>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="create-new" className="p-6 m-0 space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="type">Transaction Type</Label>
-                  <Select defaultValue="bill-payment">
-                    <SelectTrigger id="type">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="bill-payment">Bill Payment</SelectItem>
-                      <SelectItem value="expense">Expense Voucher</SelectItem>
-                      <SelectItem value="transfer">Bank Transfer</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Contact</span>
+                    <p className="font-medium text-foreground">
+                      {transaction.description.split(" ").slice(0, 2).join(" ")}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Account</span>
+                    <p className="font-medium text-foreground">6400 - Bank Fees</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Reference</span>
+                    <p className="font-medium text-foreground font-mono">{transaction.refId || "N/A"}</p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact">Contact</Label>
-                  <Select>
-                    <SelectTrigger id="contact">
-                      <SelectValue placeholder="Select contact" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="transfernon">Transfernon Tech</SelectItem>
-                      <SelectItem value="etisalat">Etisalat</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="account">Account</Label>
-                  <Select>
-                    <SelectTrigger id="account">
-                      <SelectValue placeholder="Select account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="6400">6400 - Bank Fees</SelectItem>
-                      <SelectItem value="6100">6100 - Utilities</SelectItem>
-                      <SelectItem value="5000">5000 - Cost of Sales</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tax">Tax</Label>
-                  <Select defaultValue="gst">
-                    <SelectTrigger id="tax">
-                      <SelectValue placeholder="Select tax" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="gst">GST (5%)</SelectItem>
-                      <SelectItem value="none">No Tax</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                <Separator />
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="ref">Reference</Label>
-                  <Input id="ref" placeholder="Enter reference..." />
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Matched Invoice</span>
+                    <p className="font-medium text-foreground font-mono">Inv #2024-99</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Invoice Date</span>
+                    <p className="font-medium text-foreground">25-04-2029</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Tax Applied</span>
+                    <p className="font-medium text-foreground">GST (5%)</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-xs">Project</span>
+                    <p className="font-medium text-foreground">None</p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="project">Project</Label>
-                  <Select>
-                    <SelectTrigger id="project">
-                      <SelectValue placeholder="None" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="proj-1">Project Alpha</SelectItem>
-                      <SelectItem value="proj-2">Project Beta</SelectItem>
-                    </SelectContent>
-                  </Select>
+
+                <Separator />
+
+                <div className="space-y-1">
+                  <span className="text-muted-foreground text-xs">Notes</span>
+                  <p className="text-sm text-foreground">
+                    Auto-matched by AI reconciliation engine with 95% confidence.
+                  </p>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea id="notes" placeholder="Add internal note here..." rows={3} />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Attachments</Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Drag & drop files here or click to browse
+                <div className="space-y-1">
+                  <span className="text-muted-foreground text-xs">Reconciled On</span>
+                  <p className="text-sm text-foreground font-mono">
+                    {new Date().toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </p>
                 </div>
               </div>
-            </TabsContent>
+            </div>
           </div>
-        </Tabs>
+        ) : (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+            <TabsList className="w-full justify-start rounded-none border-b border-border bg-transparent px-6 shrink-0">
+              <TabsTrigger
+                value="ai-suggestions"
+                className="gap-2 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none"
+              >
+                <Sparkles className="h-4 w-4" />
+                AI Suggestions ({mockMatches.length})
+              </TabsTrigger>
+              <TabsTrigger
+                value="find-match"
+                className="gap-2 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none"
+              >
+                <Search className="h-4 w-4" />
+                Find & Match
+              </TabsTrigger>
+              <TabsTrigger
+                value="create-new"
+                className="gap-2 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none"
+              >
+                <Plus className="h-4 w-4" />
+                Create New
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
+              <TabsContent value="ai-suggestions" className="p-6 m-0 space-y-4">
+                {mockMatches.length > 1 && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20 text-sm">
+                    <AlertTriangle className="h-4 w-4 text-warning shrink-0" />
+                    <span className="text-warning-foreground">
+                      Multiple potential matches found. Please select the correct invoice.
+                    </span>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {mockMatches.map((match, index) => (
+                    <AIMatchCard
+                      key={match.id}
+                      match={match}
+                      isSelected={selectedMatchId === match.id}
+                      isBestMatch={index === 0}
+                      onSelect={setSelectedMatchId}
+                    />
+                  ))}
+                </div>
+
+                <Button variant="link" className="px-0 text-primary">
+                  + Show 7 other matches...
+                </Button>
+
+                {/* Suggested Match Details for Selected Invoice */}
+                {selectedMatchId && (
+                  <>
+                    <Separator className="my-4" />
+                    <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                      <h4 className="text-sm font-semibold text-foreground mb-3">
+                        Suggested Match Details
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="space-y-1">
+                          <span className="text-muted-foreground text-xs">Transaction Type</span>
+                          <p className="font-medium text-foreground">Bill Payment</p>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-muted-foreground text-xs">Contact</span>
+                          <p className="font-medium text-foreground">Transfernon Tech</p>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-muted-foreground text-xs">Account</span>
+                          <p className="font-medium text-foreground">6400 - Bank Fees</p>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-muted-foreground text-xs">Reference</span>
+                          <p className="font-medium text-foreground font-mono">INV-AUTO-991</p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </TabsContent>
+
+              <TabsContent value="find-match" className="p-6 m-0">
+                <div className="relative mb-6">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input placeholder="Search invoices, bills, payments..." className="pl-9" />
+                </div>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Search className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p>Search for existing records to match this transaction</p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="create-new" className="p-6 m-0 space-y-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="type">Transaction Type</Label>
+                    <Select defaultValue="bill-payment">
+                      <SelectTrigger id="type">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="bill-payment">Bill Payment</SelectItem>
+                        <SelectItem value="expense">Expense Voucher</SelectItem>
+                        <SelectItem value="transfer">Bank Transfer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact">Contact</Label>
+                    <Select>
+                      <SelectTrigger id="contact">
+                        <SelectValue placeholder="Select contact" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="transfernon">Transfernon Tech</SelectItem>
+                        <SelectItem value="etisalat">Etisalat</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="account">Account</Label>
+                    <Select>
+                      <SelectTrigger id="account">
+                        <SelectValue placeholder="Select account" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="6400">6400 - Bank Fees</SelectItem>
+                        <SelectItem value="6100">6100 - Utilities</SelectItem>
+                        <SelectItem value="5000">5000 - Cost of Sales</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tax">Tax</Label>
+                    <Select defaultValue="gst">
+                      <SelectTrigger id="tax">
+                        <SelectValue placeholder="Select tax" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gst">GST (5%)</SelectItem>
+                        <SelectItem value="none">No Tax</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="ref">Reference</Label>
+                    <Input id="ref" placeholder="Enter reference..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="project">Project</Label>
+                    <Select>
+                      <SelectTrigger id="project">
+                        <SelectValue placeholder="None" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="proj-1">Project Alpha</SelectItem>
+                        <SelectItem value="proj-2">Project Beta</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Notes</Label>
+                  <Textarea id="notes" placeholder="Add internal note here..." rows={3} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Attachments</Label>
+                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                    <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Drag & drop files here or click to browse
+                    </p>
+                  </div>
+                </div>
+              </TabsContent>
+            </div>
+          </Tabs>
+        )}
 
         {/* Sticky Footer */}
         <div className="px-6 py-4 border-t border-border bg-card flex items-center justify-between shrink-0">
@@ -322,13 +414,15 @@ export const ReconcileDrawer = ({
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {transaction.status === "reconciled" ? "Close" : "Cancel"}
             </Button>
-            <Button
-              onClick={() => onReconcile(transaction.id, selectedMatchId)}
-            >
-              Reconcile Item
-            </Button>
+            {transaction.status !== "reconciled" && (
+              <Button
+                onClick={() => onReconcile(transaction.id, selectedMatchId)}
+              >
+                Reconcile Item
+              </Button>
+            )}
           </div>
         </div>
       </SheetContent>
