@@ -160,6 +160,21 @@ const BankReconciliationPage = () => {
     });
   };
 
+  const handleUnreconcile = (transactionId: string) => {
+    setTransactions((prev) =>
+      prev.map((t) =>
+        t.id === transactionId
+          ? { ...t, status: "pending" as const, refId: null }
+          : t
+      )
+    );
+    setDrawerOpen(false);
+    toast({
+      title: "Reconciliation Removed",
+      description: "The transaction is now pending and ready for re-matching.",
+    });
+  };
+
   const handlePrevious = () => {
     if (!selectedTransaction) return;
     const currentIndex = transactions.findIndex((t) => t.id === selectedTransaction.id);
@@ -218,6 +233,7 @@ const BankReconciliationPage = () => {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         onReconcile={handleConfirmReconcile}
+        onUnreconcile={handleUnreconcile}
         onPrevious={handlePrevious}
         onNext={handleNext}
       />
