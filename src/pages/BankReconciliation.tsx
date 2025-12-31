@@ -168,7 +168,6 @@ const BankReconciliationPage = () => {
           : t
       )
     );
-    setDrawerOpen(false);
     toast({
       title: "Reconciliation Removed",
       description: "The transaction is now pending and ready for re-matching.",
