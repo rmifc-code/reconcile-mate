@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Check, Clock, Sparkles } from "lucide-react";
+import { Check, Clock, Sparkles, CircleDashed } from "lucide-react";
 
-export type TransactionStatus = "pending" | "ai-match" | "reconciled";
+export type TransactionStatus = "pending" | "ai-match" | "reconciled" | "partial";
 
 interface StatusBadgeProps {
   status: TransactionStatus;
@@ -25,6 +25,11 @@ export const StatusBadge = ({ status, confidence }: StatusBadgeProps) => {
       className: "bg-success/10 text-success border-success/20 hover:bg-success/20",
       icon: Check,
       label: "Reconciled",
+    },
+    partial: {
+      className: "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20",
+      icon: CircleDashed,
+      label: "Partial",
     },
   };
 
