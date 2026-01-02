@@ -125,6 +125,15 @@ const mockTransactions: Transaction[] = [
     amount: 1000.0,
     type: "credit",
   },
+  {
+    id: "14",
+    date: "26-04-2029",
+    description: "Transfernon Maintenance Multi-Invoice Payment",
+    refId: "PART-2024-01",
+    status: "partial",
+    amount: 2500.0,
+    type: "debit",
+  },
 ];
 
 const BankReconciliationPage = () => {

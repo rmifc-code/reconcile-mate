@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { StatusBadge, TransactionStatus } from "./StatusBadge";
 import { cn } from "@/lib/utils";
-import { ArrowUpDown, Eye, Link2, FileSearch, MoreHorizontal, Copy, ExternalLink } from "lucide-react";
+import { ArrowUpDown, Eye, Link2, FileSearch, MoreHorizontal, Copy, ExternalLink, CircleDashed } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,6 +80,8 @@ export const TransactionGrid = ({
         return FileSearch;
       case "reconciled":
         return Eye;
+      case "partial":
+        return CircleDashed;
     }
   };
 
@@ -119,7 +121,8 @@ export const TransactionGrid = ({
                   "transition-colors cursor-pointer",
                   isSelected && "bg-primary/5",
                   transaction.status === "ai-match" && "bg-info/5",
-                  transaction.status === "reconciled" && "bg-muted/30"
+                  transaction.status === "reconciled" && "bg-muted/30",
+                  transaction.status === "partial" && "bg-primary/5"
                 )}
                 onClick={() => onReconcile(transaction)}
               >

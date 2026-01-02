@@ -15,7 +15,7 @@ import {
 import { Transaction } from "./TransactionGrid";
 import { AIMatchCard } from "./AIMatchCard";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ChevronRight, AlertTriangle, Upload, Sparkles, Search, Plus, Lock, CheckCircle2, Unlink } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertTriangle, Upload, Sparkles, Search, Plus, Lock, CheckCircle2, Unlink, CircleDashed } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -119,7 +119,7 @@ export const ReconcileDrawer = ({
           </div>
         </div>
 
-        {/* Reconciled View or Tabs */}
+        {/* Reconciled View, Partial View, or Tabs */}
         {transaction.status === "reconciled" ? (
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* Success Banner */}
@@ -221,6 +221,91 @@ export const ReconcileDrawer = ({
               </Button>
               <p className="text-xs text-muted-foreground mt-2 text-center">
                 This will reset the transaction to pending status for re-matching.
+              </p>
+            </div>
+          </div>
+        ) : transaction.status === "partial" ? (
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {/* Partial Banner */}
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <CircleDashed className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="font-medium text-primary">Partially Reconciled</p>
+                <p className="text-sm text-muted-foreground">
+                  This transaction has been partially matched. Additional invoices may be needed.
+                </p>
+              </div>
+            </div>
+
+            {/* Amount Summary */}
+            <div className="bg-muted/50 rounded-lg p-4 border border-border">
+              <h4 className="text-sm font-semibold text-foreground mb-3">Amount Summary</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Bank Amount:</span>
+                  <span className="font-mono font-medium text-foreground">
+                    {formatAmount(transaction.amount, transaction.type)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Matched Amount:</span>
+                  <span className="font-mono font-medium text-success">
+                    {formatAmount(transaction.amount * 0.6, transaction.type)}
+                  </span>
+                </div>
+                <Separator className="my-2" />
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-medium">Unmatched Amount:</span>
+                  <span className="font-mono font-bold text-primary">
+                    {formatAmount(transaction.amount * 0.4, transaction.type)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Matched Invoices */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-foreground">Matched Invoices</h3>
+                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                  1 of 2 matched
+                </Badge>
+              </div>
+
+              <div className="bg-muted/50 rounded-lg p-4 border border-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground font-mono">Inv #2024-88</p>
+                    <p className="text-xs text-muted-foreground">20-04-2029</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono font-medium text-success">
+                      {formatAmount(transaction.amount * 0.6, transaction.type)}
+                    </p>
+                    <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-xs">
+                      Matched
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3 pt-4">
+              <Button className="w-full gap-2" variant="default">
+                <Plus className="h-4 w-4" />
+                Match Remaining Amount
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                onClick={() => onUnreconcile(transaction.id)}
+              >
+                <Unlink className="h-4 w-4" />
+                Break Reconciliation
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                Breaking will reset all matches for this transaction.
               </p>
             </div>
           </div>
